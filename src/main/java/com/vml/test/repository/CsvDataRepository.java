@@ -4,7 +4,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import com.vml.test.domain.CsvData;
+import com.vml.test.domain.Article;
 
 public class CsvDataRepository {
 
@@ -14,7 +14,7 @@ public class CsvDataRepository {
 		entityManagerFactory = Persistence.createEntityManagerFactory("vml");
 	}
 
-	public CsvData createCsvData(CsvData data) {
+	public Article createCsvData(Article data) {
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		entityManager.getTransaction().begin();
