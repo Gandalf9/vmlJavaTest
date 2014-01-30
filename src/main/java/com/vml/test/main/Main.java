@@ -1,30 +1,23 @@
 package com.vml.test.main;
 
-import java.util.List;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.vml.test.domain.Article;
-import com.vml.test.repository.CsvDataRepository;
-import com.vml.test.service.ArticleReader;
+import com.vml.test.service.ArticleService;
 
 public class Main {
 
-	private static Logger logger = LoggerFactory.getLogger(Main.class);
-	
 	public static void main(String[] args) throws Exception {
 		
-		logger.debug("Going to kick off the application");
-		ArticleReader articleReader = new ArticleReader();
-		CsvDataRepository repo = new CsvDataRepository();
-		
-		List<Article> articles = articleReader.readCSVFile();
-		
-		logger.debug("Grabbed data from the database");
-		
-		for (Article article : articles) {
-			repo.createCsvData(article);
+		validateArguments(args);
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
+		ArticleService service = (ArticleService) ctx.getBean("articleService");
+		service.loadFileIntoApplication(args[0]);
+	}
+	
+	private static void validateArguments(String[] args) throws Exception {
+		if (args.length < 1 || args.length > 1 || args[0] == null) {
+			throw new IllegalArgumentException(String.format("Incorrect number of parameters {%d}\nShould us the format: java com.vml.test.main.Main [fileLocation]", args.length));
 		}
 	}
 }

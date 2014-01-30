@@ -11,3 +11,4 @@
 *.ear
 /target/*
 /target
+.DS_Store

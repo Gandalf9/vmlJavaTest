@@ -4,8 +4,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.springframework.stereotype.Repository;
+
 import com.vml.test.domain.Article;
 
+@Repository
 public class CsvDataRepository {
 
 	private EntityManagerFactory entityManagerFactory;

@@ -1,33 +1,39 @@
 package com.vml.test.service;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.constraint.UniqueHashCode;
 import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.exception.SuperCsvCellProcessorException;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
 import com.vml.test.domain.Article;
+import com.vml.test.exception.VmlApplicationException;
 import com.vml.test.supercsv.ParseShort;
 
+@Component
 public class ArticleReader {
 	
 	private static Logger logger = LoggerFactory.getLogger(ArticleReader.class);
 	
-	private static final String CSV_FILENAME = "src/test/resources/test.csv";
-
+	public ArticleReader() {
+	}
+	
 	private static CellProcessor[] getProcessors() {
 
 		final CellProcessor[] processors = new CellProcessor[] {
-				new UniqueHashCode(new ParseInt()), // id
+				new UniqueHashCode(new ParseInt()), // ID
 				new Optional(new ParseInt()), // ARTICLEID
 				new Optional(), // ATTRIBUTE
 				new Optional(), // VALUE
@@ -38,11 +44,9 @@ public class ArticleReader {
 		return processors;
 	}
 	
-	public List<Article> readCSVFile() throws Exception {
+	public List<Article> readCSVFile(String fileLocation) throws VmlApplicationException {
 		
-		ICsvBeanReader beanReader = null;
-		try {
-			beanReader = new CsvBeanReader(new FileReader(CSV_FILENAME), CsvPreference.STANDARD_PREFERENCE);
+		try (ICsvBeanReader beanReader = new CsvBeanReader(new FileReader(fileLocation), CsvPreference.STANDARD_PREFERENCE) ) {
 
 			final String[] headers = beanReader.getHeader(true);
 			
@@ -52,7 +56,7 @@ public class ArticleReader {
 			
 			final CellProcessor[] processors = getProcessors();
 
-			List<Article> articles = new ArrayList<Article>();
+			List<Article> articles = new ArrayList<>();
 			Article article = null;
 			
 			//TODO: Bug If first element fails, then will not process the file
@@ -61,18 +65,18 @@ public class ArticleReader {
 					article = beanReader.read(Article.class, headers, processors);
 					if (article != null) articles.add(article);
 					
-				} catch (SuperCsvCellProcessorException e) {
+				} catch (Exception e) {
 					logger.warn(e.getMessage());
 				}
 						
 			} while (article != null);
 				
 			return articles;
-
-		} finally {
-			if (beanReader != null) {
-				beanReader.close();
-			}
-		}
+			
+		} catch(FileNotFoundException e) {
+			throw new VmlApplicationException(String.format("File Location invalid {%s}", fileLocation), e);
+		} catch(IOException e) {
+			throw new VmlApplicationException("Error loading the headers", e);
+		} 
 	}
 }
