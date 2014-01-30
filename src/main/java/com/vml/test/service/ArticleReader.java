@@ -58,18 +58,20 @@ public class ArticleReader {
 
 			List<Article> articles = new ArrayList<>();
 			Article article = null;
+			boolean finished = false;
 			
-			//TODO: Bug If first element fails, then will not process the file
-			do {
+			while(!finished) {
 				try {
 					article = beanReader.read(Article.class, headers, processors);
-					if (article != null) articles.add(article);
-					
-				} catch (Exception e) {
+					if (article != null) {
+						articles.add(article);
+					} else {
+						finished = true;
+					}
+				} catch (IOException e) {
 					logger.warn(e.getMessage());
 				}
-						
-			} while (article != null);
+			}
 				
 			return articles;
 			
