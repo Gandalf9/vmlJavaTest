@@ -23,7 +23,7 @@ import com.vml.test.exception.VmlApplicationException;
 import com.vml.test.model.ArticleModel;
 import com.vml.test.supercsv.ParseShort;
 
-//TODO: This class technically does not need to be a component.
+//TODO: This class technically does not need to be a spring component.
 @Component
 public class ArticleReader {
 	

@@ -4,11 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -21,17 +22,18 @@ import com.vml.test.domain.Article;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {"classpath:spring-context.xml"})
+@Transactional
 public class MainTest {
 
-	@PersistenceUnit(unitName="vml")
-	private EntityManagerFactory emf;
+	@PersistenceContext
+	private EntityManager em;
 	
 	@Test
+	@Rollback
 	public void testingMain() throws Exception {
 		String[] arg = {"src/test/resources/1.csv"};
 		Main.main(arg);
 		
-		EntityManager em = emf.createEntityManager();
 		Article article1 = em.find(Article.class, 1);
 		Article article2 = em.find(Article.class, 2);
 		

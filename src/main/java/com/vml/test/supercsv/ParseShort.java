@@ -6,6 +6,12 @@ import org.supercsv.cellprocessor.ift.StringCellProcessor;
 import org.supercsv.exception.SuperCsvCellProcessorException;
 import org.supercsv.util.CsvContext;
 
+/**
+ * 
+ * Have implemented my own ParseShort as one does not exist
+ * @author yatinmistry
+ *
+ */
 public class ParseShort extends CellProcessorAdaptor implements StringCellProcessor {
 	
 	/**
