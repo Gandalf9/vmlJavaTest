@@ -3,23 +3,21 @@ package com.vml.test.repository;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnit;
 
 import org.springframework.stereotype.Repository;
 
 import com.vml.test.domain.Article;
 
 @Repository
-public class CsvDataRepository {
+public class ArticleRepository {
 
-	private EntityManagerFactory entityManagerFactory;
+	@PersistenceUnit(unitName="vml")
+	private EntityManagerFactory emf;
 
-	public CsvDataRepository() {
-		entityManagerFactory = Persistence.createEntityManagerFactory("vml");
-	}
+	public Article add(Article data) {
 
-	public Article createCsvData(Article data) {
-
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		EntityManager entityManager = emf.createEntityManager();
 		entityManager.getTransaction().begin();
 
 		entityManager.persist(data);
@@ -29,5 +27,4 @@ public class CsvDataRepository {
 
 		return data;
 	}
-
 }

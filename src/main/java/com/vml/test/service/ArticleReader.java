@@ -9,19 +9,21 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.constraint.UniqueHashCode;
 import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.exception.SuperCsvException;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
 import com.vml.test.domain.Article;
 import com.vml.test.exception.VmlApplicationException;
+import com.vml.test.model.ArticleModel;
 import com.vml.test.supercsv.ParseShort;
 
+//TODO: This class technically does not need to be a component.
 @Component
 public class ArticleReader {
 	
@@ -44,7 +46,7 @@ public class ArticleReader {
 		return processors;
 	}
 	
-	public List<Article> readCSVFile(String fileLocation) throws VmlApplicationException {
+	public List<ArticleModel> readCSVFile(String fileLocation) throws VmlApplicationException {
 		
 		try (ICsvBeanReader beanReader = new CsvBeanReader(new FileReader(fileLocation), CsvPreference.STANDARD_PREFERENCE) ) {
 
@@ -56,25 +58,27 @@ public class ArticleReader {
 			
 			final CellProcessor[] processors = getProcessors();
 
-			List<Article> articles = new ArrayList<>();
-			Article article = null;
+			List<ArticleModel> articles = new ArrayList<>();
+			ArticleModel article = null;
 			boolean finished = false;
 			
 			while(!finished) {
 				try {
-					article = beanReader.read(Article.class, headers, processors);
+					article = beanReader.read(ArticleModel.class, headers, processors);
 					if (article != null) {
 						articles.add(article);
 					} else {
 						finished = true;
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
 					logger.warn(e.getMessage());
 				}
 			}
 				
 			return articles;
 			
+		} catch(SuperCsvException e) {
+			throw new VmlApplicationException(String.format("File Location invalid {%s}", fileLocation), e);
 		} catch(FileNotFoundException e) {
 			throw new VmlApplicationException(String.format("File Location invalid {%s}", fileLocation), e);
 		} catch(IOException e) {

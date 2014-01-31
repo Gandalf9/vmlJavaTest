@@ -10,11 +10,11 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		
 		if (args.length < 1 || args.length > 1 || args[0] == null) {
-			throw new IllegalArgumentException(String.format("Incorrect number of parameters {%d}\nShould us the format: java com.vml.test.main.Main [fileLocation]", args.length));
+			throw new IllegalArgumentException(String.format("Incorrect number of parameters {%d}\nShould use the format: java com.vml.test.main.Main [fileLocation]", args.length));
 		}
 		
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-context.xml");
 		ArticleService articleService = (ArticleService) ctx.getBean("articleService");
-		articleService.loadFileIntoApplication(args[0]);
+		articleService.loadDataFromFile(args[0]);
 	}
 }

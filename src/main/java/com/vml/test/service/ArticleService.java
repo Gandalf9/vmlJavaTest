@@ -7,21 +7,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.vml.test.domain.Article;
 import com.vml.test.exception.VmlApplicationException;
-import com.vml.test.repository.CsvDataRepository;
+import com.vml.test.model.ArticleModel;
+import com.vml.test.repository.ArticleRepository;
+import com.vml.test.transformer.ArticleTransformer;
 
 @Service
 public class ArticleService {
 	
 	private Logger logger = LoggerFactory.getLogger(ArticleService.class);
 	
-	private CsvDataRepository csvDataRepository;
+	private ArticleRepository csvDataRepository;
 	
 	private ArticleReader articleReader;
 	
 	@Autowired
-	public void setCsvDataRepository(CsvDataRepository csvDataRepository) {
+	public void setCsvDataRepository(ArticleRepository csvDataRepository) {
 		this.csvDataRepository = csvDataRepository;
 	}
 
@@ -30,21 +35,32 @@ public class ArticleService {
 		this.articleReader = articleReader;
 	}
 	
-	public void loadFileIntoApplication(String fileLocation) throws VmlApplicationException {
+	public void loadDataFromFile(String fileLocation) throws VmlApplicationException {
 
 		logger.info(String.format("Going to upload file %s", fileLocation));
 		
-		List<Article> articles = articleReader.readCSVFile(fileLocation);
+		List<ArticleModel> models = articleReader.readCSVFile(fileLocation);
 		
-		transformArticles(articles);
+		List<Article> articles = transformArticles(models);
 		
 		for (Article article : articles) {
-			csvDataRepository.createCsvData(article);
+			csvDataRepository.add(article);
 		}
 	}
 	
-	private void transformArticles(List<Article> articles) {
-		//TODO: Need to implement this method
-	}
+	
+	private List<Article> transformArticles(List<ArticleModel> articles) {
+		
+		//TODO: Any validation will go here.
+		
+		//I know this is an over kill for use of Guava transform. Easier just to use a for loop (does same
+		//thing under the covers). Just wanted to show use of Guava.
+		return Lists.newArrayList(Iterables.transform(articles, new Function<ArticleModel, Article>() {
 
+			@Override
+			public Article apply(ArticleModel model) {
+				return ArticleTransformer.toEntity(model);
+			}
+		}));
+	}
 }
