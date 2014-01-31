@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import com.vml.test.domain.Article;
 
@@ -27,8 +26,9 @@ import com.vml.test.domain.Article;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {"classpath:spring-context.xml"})
+@TestExecutionListeners({TransactionalTestExecutionListener.class})
 @Transactional
-@Ignore  //TODO: renable ignored repo test
+//@Ignore  //TODO: renable ignored repo test
 public class ArticleRespositoryTest {
 
 	private static final int ID = 1;
